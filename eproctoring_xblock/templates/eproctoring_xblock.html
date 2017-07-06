@@ -1,0 +1,535 @@
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script src="https://files.codepedia.info/files/uploads/iScripts/html2canvas.js"></script>
+</head>
+<body>
+<div id = "container" data-state = {{ student_state }}> 
+<div class="eproctoring_xblock_block">
+<p>EproctoringXBlock: count is now
+    <span class='count'>{self.count}</span> (click me to increment).
+</p>
+</div>
+
+
+     PROCTORING EXAM
+<noscript>
+		
+      <div style="border: 1px solid purple; padding: 10px">
+        <span style="color:red">JavaScript is not enabled!</span>
+      </div>
+ </noscript>
+
+</div>
+<div id="myModal1" class="modal">
+  <!-- Modal content -->
+  <div class="modal-content">
+    <span class="close">&times;</span>
+	<div id="MyEdit1">This text will change</div>
+	<p>Username = "{{ student_name }}"</p> 
+
+    <p>We have Identified that you have pressed any one of the Ctrl or Alt keys - This behaviour has been marked as suspicious!</p>
+  </div>
+
+</div>
+
+<!-- The Modal2 -->
+<div id="myModal2" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">
+    <span class="close">&times;</span>
+  <div id="MyEdit2">This text will change</div>
+        <p>Username = "{{ student_name }}"</p> 
+ <p>It seems that you tried to minimize the browser - This activity is marked as suspicious!</p>
+  </div>
+
+</div>
+
+<!-- The Modal3 -->
+<div id="myModal3" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">
+    <span class="close">&times;</span>
+<div id="MyEdit3">This text will change</div>
+        <p>Username = "{{ student_name }}"</p>   
+ <p>It seems that you tried to resize the window - This activity is marked as suspicious! Please resize the browser window to its original size.</p>
+  </div>
+
+</div>
+
+<!-- The Modal4 -->
+<div id="myModal4" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">
+    <span class="close">&times;</span>
+<div id="MyEdit4">This text will change</div>
+        <p>Username = "{{ student_name }}"</p>   
+ <p>It seems that you tried to either move to some other application or minimising the browser - This activity is marked as suspicious!</p>
+  </div>
+
+</div>
+<canvas id="previewImage"> </canvas>
+</div>
+
+<!-- Trigger/Open The Modal -->
+
+<!-- The Modal -->
+<div id="compareModal" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">
+	<p> <b>Instructions :-</b> </p>
+	<p> <font size="2">1. You shouldn't navigate from this browser window or resize it during exam.<br> 2. While giving images for comparison below and during exam, maintain straight posture and avoid looking away from screen.<br>3. All suspicious activities are being monitored and stored - Act accordingly.</font><p>
+        <video  width=300 height=300 id="compare_video" controls autoplay></video>
+        <canvas  id="compareCanvas" width=600 height=400 style="float:right"></canvas>
+        <canvas  id="myCanvas" width=800 height=600 hidden></canvas>
+
+
+	<p>
+        <button id="take_photo_button" >Take Snapshot</button>
+        </p>
+        <p>
+        <button id="submit_button">submit</button>
+        </p>
+
+  </div>
+
+</div>
+
+ 
+<canvas  id="myCanvas" width=800 height=600 hidden></canvas>
+
+
+
+
+
+
+<script type="text/javascript">
+/* Javascript for EproctoringXBlock. */
+function EproctoringXBlock(runtime, element) {
+
+    function updateCount(result) {
+        $('.count', element).text(result.count);
+    }
+
+    var handlerUrl = runtime.handlerUrl(element, 'increment_count');
+    var startingtime = runtime.handlerUrl(element, 'startingtime');
+    var endingtime = runtime.handlerUrl(element, 'endingtime');
+    var differenceoftimes = runtime.handlerUrl(element, 'differenceoftimes');
+
+    $('p', element).click(function(eventObject) {
+        $.ajax({
+            type: "POST",
+            url: handlerUrl,
+            data: JSON.stringify({"hello": "world"}),
+            success: updateCount
+        });
+    });
+
+
+    $(function ($) {
+        /* Here's where you'd do things on page load. */
+
+
+
+var modal1 = document.getElementById('myModal1');
+var modal2 = document.getElementById('myModal2');
+var modal3 = document.getElementById('myModal3');
+var modal4 = document.getElementById('myModal4');
+var modal5 = document.getElementById('myModal5');
+var resize_count=0;
+var notification_count=0;
+var element1 = $("#myModal1");
+var element2 = $("#myModal2");
+var element3 = $("#myModal3");
+var element4 = $("#myModal4");
+var element5 = $("#myModal5");
+// Get the button that opens the modal
+//var btn = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span1 = document.getElementsByClassName("close")[0];
+var span2 = document.getElementsByClassName("close")[1];
+var span3 = document.getElementsByClassName("close")[2];
+var span4 = document.getElementsByClassName("close")[3];
+
+// When the user clicks the button, open the modal 
+/*btn.onclick = function() {
+    modal.style.display = "block";
+}*/
+// When the user clicks on <span> (x), close the modal
+span1.onclick = function() {
+    modal1.style.display = "none";
+}
+span2.onclick = function() {
+    modal2.style.display = "none";
+}
+span3.onclick = function() {
+    modal3.style.display = "none";
+}
+span4.onclick = function() {
+    modal4.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal1) {
+        modal1.style.display = "none";
+    }
+    }
+window.onclick = function(event) {
+    if (event.target == modal2) {
+        modal2.style.display = "none";
+    }
+}
+window.onclick = function(event) {
+    if (event.target == modal3) {
+        modal3.style.display = "none";
+    }
+}
+window.onclick = function(event) {
+    if (event.target == modal4) {
+        modal4.style.display = "none";
+    }
+}
+//DETECTION OF SPECIAL KEYS SUCH AS CTRL,SHIFT,ALT
+
+function notifications()
+{
+
+function detectspecialkeys(e){
+    var evtobj=window.event? window.event : e
+    if (evtobj.altKey || evtobj.ctrlKey){//evtobj.shiftKey
+        //window.alert("DON'T PRESS CTRL,ALT,SHIFT AND ANY SPECIAL KEYS");
+         document.getElementById("MyEdit1").innerHTML =  new Date();
+	 modal1.style.display = "block";
+        function1 (element1);
+        }
+}
+
+//VISIBILITY CHANGER--MINIMIZING,NEW TAB
+/*document.addEventListener("visibilitychange", function() {
+if (document.hidden) {//window.alert("YOU SHOULD NOT MINIMIZE BROWSER");
+        modal2.style.display = "block";}
+else {   }
+});*/
+document.onkeydown=detectspecialkeys;
+
+//RESIZING FUNCTION
+window.addEventListener("resize", myFunction);
+function myFunction() {
+        if(resize_count!=0){
+	 //window.alert("DON'T RESIZE WINDOW");
+    document.getElementById("MyEdit3").innerHTML =  new Date();
+    modal3.style.display = "block";
+    function1 (element3);
+    }
+    //var element = document.getElementById('myModal3');
+    //screenshot_modal(element);}
+    else
+    resize_count++;
+}
+
+//NAVIGATES TO OTHER PAGES
+//flag=0;
+var away=0;
+var flag = 0;
+// flag == 0 means that person is away from page for the first time
+setInterval( 
+function () {
+  if ( document.hasFocus() ) {
+     notification_count=0;
+     if(away==1){ 
+        //        var getData;
+        //    $.ajax({
+        //    type: "POST",
+        //    url: endingtime,
+        //    data: JSON.stringify({"hello": "world"}),
+            //success: alert("ending time funvtion"),
+
+       // });
+        $.ajax({
+            type: "POST",
+            url: differenceoftimes,
+            data: JSON.stringify({"hello": "world"}),
+            //success: alert("difference time function"),
+
+        });flag=0;
+        away = 0;
+        }
+     else{}
+
+      }
+  else {//window.alert("DON'T NAVIGATE TO OTHER APPLICATIONS/DON'T MINIMIZE THE BROWSER.STAY HERE ONLY");
+        if(flag == 0){
+          $.ajax({
+            type: "POST",
+            url: startingtime,
+            data: JSON.stringify({"hello": "world"}),
+            //success: alert("starting time function"),
+        });away=1;flag = 1;
+   setTimeout( notifyMe() ,100);
+	document.getElementById("MyEdit4").innerHTML =  new Date();
+    modal4.style.display = "block";function1 (element4);
+}
+          // modal4.style.display = "block";function1 (element4); notifyMe();notification_count=1;
+	//notifyMe();
+	notification_count=1;
+}
+},200);
+//var getCanvas;
+//function screenshot_modal (element) {
+//         html2canvas(element, {
+//         onrendered: function (canvas) {
+//                $("#previewImage").append(canvas);
+//                getCanvas = canvas;
+//             }
+//        });
+//    };
+
+
+//CLOSING TAB OR WINDOW
+/*window.addEventListener("beforeunload", function (e) {
+ var confirmationMessage = "tab close";
+e.returnValue = confirmationMessage;     //Gecko + IE
+window.event.returnValue = confirmationMessage;
+ sendkeylog(confirmationMessage);
+return confirmationMessage;                                //Webkit, Safari, Chrome etc.
+});*/
+
+//NOTIFICATIONS
+function notifyMe() {
+  // Let's check if the browser supports notifications
+  if (!("Notification" in window)) {
+    alert("This browser does not support desktop notification");
+  }
+
+  // Let's check whether notification permissions have already been granted
+  else if (Notification.permission === "granted") {
+          if(notification_count==0){
+    // If it's okay let's create a notification
+       var notification = new Notification("Suspicious Activity Identified", {
+
+        body: "Don't navigate to other pages and don't minimize the browser!. Please go back to the browser window of the test again."
+
+        }); }
+  }
+
+  // Otherwise, we need to ask the user for permission
+  else if (Notification.permission !== "denied") {
+    Notification.requestPermission(function (permission) {
+      // If the user accepts, let's create a notification
+      if (permission === "granted") {
+                  if(notification_count==0){
+       var notification = new Notification("Suspicious Activity Identified", {
+
+        body: "Don't navigate to other pages and don't minimize the browser!. Please go back to the browser window of the test again."
+
+        }); }
+      }
+    });
+  }
+
+  // At last, if the user has denied notifications, and you 
+  // want to be respectful there is no need to bother them any more.
+}
+
+}
+
+/*commenting recently
+//alert("hi");
+//var element = document.getElementById('myModal4');
+//var element = $("#myModal4"); // global variable
+//alert(element);
+var getCanvas; // global variable
+setInterval ( checkPageFocus, 200);
+function checkPageFocus() {
+  if ( document.hasFocus() ){} else {function1();}}*/
+    
+    var getCanvas;
+    function function1 (element_final) {//added input
+         //alert(element_final);
+         html2canvas (element_final, {
+         onrendered: function (canvas) {
+                $("#previewImage").append(canvas);
+                //getCanvas = canvas;
+		//console.log(canvas);
+		var dataURL = canvas.toDataURL();
+		//console.log(dataURL);
+		var web_screen = runtime.handlerUrl(element, 'web_screen_shot');
+		console.log(web_screen);
+				$.ajax({
+			 type: "POST",
+			 url : web_screen,
+			 data: JSON.stringify( dataURL),
+                          //success: updateCount
+			}).done(function(o) {
+			 //console.log('saved'); 
+			})	
+             }
+         });
+    };
+
+
+
+
+
+
+			      // GET USER MEDIA CODE
+			      //--------------------
+		var canvas2, ctx;
+		canvas2 = document.getElementById("myCanvas");
+		ctx = canvas2.getContext('2d');
+
+
+				  
+			//ctx.canvas.width=window.innerWidth;
+			//ctx.canvas.height=window.innerHeight;
+			if(navigator.getUserMedia ||
+                                                     navigator.webkitGetUserMedia ||
+                                                     navigator.mozGetUserMedia ||
+                                                     navigator.msGetUserMedia||navigator.oGetUserMedia){
+			navigator.getUserMedia = ( navigator.getUserMedia ||
+						     navigator.webkitGetUserMedia ||
+						     navigator.mozGetUserMedia ||
+						     navigator.msGetUserMedia||navigator.oGetUserMedia);}
+			else{alert("web cam is not loaded");}
+
+			var video;
+			var webcamStream;
+
+			var flag2=0;
+			var is_photo_taken=0;
+
+			      //---------------------
+			      // TAKE A SNAPSHOT CODE
+			      //---------------------
+
+			     // $('#b1').click(function(eventObject) {
+        	function suspicous_image()
+		{	
+		
+			setInterval(
+				function () {
+			//$('#b3').click(function(eventObject) {
+        					
+				//console.log("dattu");				
+				if(flag2==1)
+				{				
+				ctx.drawImage(compare_video, 0,0, canvas2.width, canvas2.height);
+								
+				var dataURL = canvas2.toDataURL();
+				//console.log(dataURL); 
+				var handlerUrl1 = runtime.handlerUrl(element, 'send_img');		
+				$.ajax({
+			  		type: "POST",
+			  		url: handlerUrl1,
+			  		data: JSON.stringify( dataURL),
+			  		//success: updateCount
+				}).success(function(o) {
+			  		//console.log('saved');
+					//setTimeout(take_photo(),10000);
+			  	
+			    });
+				
+			}
+    		},2000)
+		
+		}
+		
+
+		var submit_count=0;
+		var compare_canvas, compare_ctx;
+                compare_canvas = document.getElementById("compareCanvas");
+                compare_ctx = compare_canvas.getContext('2d');
+		if (navigator.getUserMedia) {
+				   navigator.getUserMedia (
+				      {
+					 video: true,
+					 audio: false
+				      },
+				      function(localMediaStream) {
+					  compare_video = document.querySelector('video');
+					 compare_video.src = window.URL.createObjectURL(localMediaStream);
+					 compare_webcamStream = localMediaStream;
+					flag2=1;
+                                                console.log("dattu")
+				      },
+				      function(err) {
+					 console.log("The following error occured: " + err);
+				      }
+				   );
+				} else {
+				   console.log("getUserMedia not supported");
+				}
+
+		
+		$('#take_photo_button').click(function(eventObject) {
+		if(flag2==1)
+		{
+		console.log("photo taken")
+        	ctx.drawImage(compare_video, 0,0, canvas2.width, canvas2.height);
+		compare_ctx.drawImage(compare_video, 0,0, compare_canvas.width, compare_canvas.height);
+		is_photo_taken=1;
+		}      
+		    });
+	$('#submit_button').click(function(eventObject) {
+                
+		if(submit_count==4)
+		{
+		document.getElementById("submit_button").disabled = true;
+		}
+
+		if(is_photo_taken==1)
+		{
+		submit_count = submit_count+1
+		var compare_dataURL = canvas2.toDataURL(); 
+		var compare_image = runtime.handlerUrl(element, 'compare_image');		
+		console.log('submitting');
+		$.ajax({
+			  type: "POST",
+			  url: compare_image,
+			  data: JSON.stringify( compare_dataURL),
+                          success: updateCount
+			}).done(function(o) {
+			  console.log('saved'); 
+			 
+			});
+
+		}
+
+    		});
+
+
+		var compare_modal = document.getElementById('compareModal');
+	
+		compare_modal.style.display = "block";
+
+		setTimeout(function(){ compare_modal.style.display = "none";
+			 suspicous_image();notifications();  }, 15000);
+
+
+			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    });
+}
+</script>
+</body>
+</html>

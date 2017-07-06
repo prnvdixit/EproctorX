@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+{% load i18n %}
+<body>
+<div id="update_and_reset">
+        <button type="button" onclick=update_suspicious_results() >Update Suspicious Results</button>
+        <button type="button" onclick=reset_suspicious_results() >Reset Suspicious Results</button>
+	<button type="button" onclick=saved_student_names() >Save Student Names</button>
+
+</div
+<div id="firstdiv">
+	<!--make buttons for front_end-->	
+</div>
+
+<div id="seconddiv" style="display:none">
+	<!--{% for i in stud_array %}
+       		<button onclick = "myFunction( '{{ i }}'  )"> {{ i }} </button>
+    	{% endfor %}-->
+</div>
+<script>
+var front_end_handler;
+var update_suspicious_results_handler;
+var reset_suspicious_results_handler;
+var save_students_handler;
+function EproctoringXBlock(runtime, element) {
+	front_end_handler = runtime.handlerUrl(element, 'front_end');
+	update_suspicious_results_handler = runtime.handlerUrl(element, 'update_handler');
+	reset_suspicious_results_handler = runtime.handlerUrl(element, 'reset_handler');
+	save_students_handler = runtime.handlerUrl(element, 'save_student_handler');
+}
+function first(){ 
+	seconddiv.style.display= "block";
+}
+function second(){ 
+ 	seconddiv.style.display= "none";
+}
+function update_suspicious_results(){
+	$.ajax({
+            type: "POST",
+            url: update_suspicious_results_handler,
+            data: JSON.stringify({"hello": "world"}),
+            //success: alert("difference time function"),
+
+        });
+
+}
+function reset_suspicious_results(){
+	$.ajax({
+            type: "POST",
+            url: reset_suspicious_results_handler,
+            data: JSON.stringify({"hello": "world"}),
+            //success: alert("difference time function"),
+
+        });
+
+}
+function saved_student_names(){
+        $.ajax({
+            type: "POST",
+            url: save_students_handler,
+            data: JSON.stringify({"hello": "world"}),
+            //success: alert("difference time function"),
+
+        });
+
+}
+
+function myFunction(student_name) {
+	document.getElementById("photos").innerHTML = student_name
+	$.ajax({
+            type: "POST",
+            url: front_end_handler,
+            data: JSON.stringify(student_name),
+            //success: alert("difference time function"),
+
+        });
+
+}
+
+
+
+
+if("{{ reload_page }}" == 1)
+{
+document.location.reload(true)
+}
+
+
+if("{{ is_active_bool }}" == 0)
+{
+alert("If this alert doesn't disappear on pressing OK, Please read the instructions below.\nThe Xblock would work only if the Exam is timed. Unfortunately, Exam is not timed. Make sure that the Exam is timed.")
+}
+else
+{
+alert("Your Xblock is loaded and functional as long as this exam is timed.")
+}
+      
+ 
+
+</script>
+</body>
+</html> 
+
