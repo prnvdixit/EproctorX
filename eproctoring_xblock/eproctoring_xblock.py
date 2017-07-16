@@ -40,23 +40,25 @@ def render_template(template_path, context={}):  # pragma: NO COVER
     return template.render(Context(context))
 
 class EproctoringXBlock(XBlock):
+	
     """
-    TO-DO: document what your XBlock does.
+    The main function being called every time page gets loaded or refreshed.
     """
     
   
     # Fields are defined on the class.  You can access them in your code as
     # self.<fieldname>.
-
-    # TO-DO: delete count, and define your own fields.
     
+    # PATH set by ADMIN - To save all the suspicious-attempts' proofs
     path = "/home/edx/suspicious_images"
 
+    # Self-Explanatory
     student_name = String(
 		default="", scope = Scope.user_state,
 		help="Name of user",
     )
 
+    # Self-Explanatory => TEST VALUE
     count = Integer(
         default=0, scope=Scope.user_state,
         help="A simple counter, to show something happening",
@@ -65,23 +67,9 @@ class EproctoringXBlock(XBlock):
 
     sum_time = Float(
         default=0.0, scope=Scope.user_state,
-        help="A simple counter, to show something suspicious happening",
+        help="A counter storing time between last web-cheating attempt",
     )
-
-    #start_time = Integer(
-    #    default=0, scope=Scope.user_state,
-    #    help="A simple counter, to show something happening",
-    #)
-
-    #end_time = Integer(
-    #    default=0, scope=Scope.user_state,
-    #    help="A simple counter, to show something happening",
-    #)
-
-    #time_difference = Integer(
-    #    default=0, scope=Scope.user_state,
-    #    help="A simple counter, to show something happening",
-    #)
+	
     time_dict = Dict(
                 default={},
                 scope=Scope.user_state
@@ -91,24 +79,14 @@ class EproctoringXBlock(XBlock):
 		default="",
 		scope=Scope.user_state
 	)
-    
-    html_data = String(
-		default="",
-		scope = Scope.user_state
-	)
 
     course_name = String(
    		  default="",
     		  scope = Scope.user_state
     	)
 
-    #block_id = String(
-    #		  default="",
-    #		  scope = Scope.user_state
-    #	)
-
-
     def get_all_courses(self):
+		
 	"""
 	This function returns a boolean value telling if the Subsection is timed or not.
 	It is called if the user is "instructor" or "staff".
@@ -140,11 +118,6 @@ class EproctoringXBlock(XBlock):
     	except:
         	return 0
 
-        # TODO Have the Django code (Agnivesh) which tell the path of saving the images
-        # self.xmodule.runtime.user_id
-        # location.course_name
-        # self.module_id
-        # TODO Find the directory in which saving the images would be best
         directory = path + "/" + course_name
 
         if not os.path.exists(directory):
@@ -173,31 +146,35 @@ class EproctoringXBlock(XBlock):
 	return path_webimg + str(len(os.listdir(path_webimg))) + "_web.png"
 
     def resource_string(self, path):
+		
         """Handy helper for getting resources from our kit."""
+	
         data = pkg_resources.resource_string(__name__, path)
         return data.decode("utf8")
    
     def is_instructor(self):
         return self.xmodule_runtime.get_user_role() == 'instructor'
     
-    # TO-DO: change this view to display your data your own way.
     def studio_view(self,request, context=None):
+	
         """
         The primary view of the EproctoringXBlock, shown to students
         when viewing courses.
         """
+	
         html = self.resource_string("templates/eproctoring_xblock2.html")
         frag = Fragment(html.format(self=self))
         frag.add_css(self.resource_string("static/css/eproctoring_xblock2.css"))
-        #frag.add_javascript(self.resource_string("static/js/src/eproctoring_xblock2.js"))
         frag.initialize_js('EproctoringXBlock')
         return frag
 
     def student_view(self, request, context=None):
+		
         """
         The primary view of the EproctoringXBlock, shown to students
         when viewing courses.
         """
+	
  	self.sum_time = 0.0
         
 	if self.xmodule_runtime.get_user_role() == 'student':
@@ -245,7 +222,6 @@ class EproctoringXBlock(XBlock):
 	    context = {
 		"is_active_bool" : is_active_bool,
 		"reload_page" : reload_page,
-		#"stud_array"  : stud_array,
 		}
 
 	    html = self.resource_string("templates/eproctoring_xblock2.html")
@@ -266,9 +242,7 @@ class EproctoringXBlock(XBlock):
     def send_img(self, image_string, suffix = '') :
         
         file = open(self.get_path(self.path, self.xmodule_runtime.xqueue['default_queuename'], self.location.block_id, database.get_user(self.xmodule_runtime.user_id)) + "json_data.txt", "w")
-    	
         file.write(image_string)
-    	
         file.close()
 
     	sub_analyse.sub_process(self.path, database.get_user(self.xmodule_runtime.user_id), self.xmodule_runtime.xqueue['default_queuename'], self.location.block_id)
@@ -284,7 +258,7 @@ class EproctoringXBlock(XBlock):
 
     @XBlock.json_handler
     def save_student_handler(self, data, suffix = ''):
-	#block-v1:IITBombay+CS007+2017_T1+type@vertical+block@28d4804481ac40b48771caae8625444c
+
 	parent_string = str(self.parent)
 	
 	index_colon = parent_string.find(':')
@@ -316,9 +290,11 @@ class EproctoringXBlock(XBlock):
 
     @XBlock.json_handler
     def compare_image(self, data,suffix=''):
+		
         """
-        An example handler, which increments the data.
+        An handler, which compares the new image with the profile image.
         """
+	
         path_compareimg1 = self.get_path(self.path, self.xmodule_runtime.xqueue['default_queuename'], self.location.block_id, database.get_user(self.xmodule_runtime.user_id)) + "compare_img"
         
         if not os.path.exists(path_compareimg1):
@@ -384,7 +360,9 @@ class EproctoringXBlock(XBlock):
     # worbench while developing your XBlock.
     @staticmethod
     def workbench_scenarios():
+	
         """A canned scenario for display in the workbench."""
+	
         return [
             ("EproctoringXBlock",
              """<eproctoring_xblock/>
